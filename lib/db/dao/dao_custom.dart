@@ -1,4 +1,4 @@
-import 'package:custom_restitutor/config.dart';
+import 'package:mytownmysymptom/config.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

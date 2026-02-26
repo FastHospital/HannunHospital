@@ -1,4 +1,3 @@
-import 'package:custom_restitutor/db/validator/db_validator.dart';
 
 //  Model SQL assembler
 /*
@@ -9,6 +8,8 @@ import 'package:custom_restitutor/db/validator/db_validator.dart';
   Dependency: 
   Desc: Model SQL assembler
 */
+
+import 'package:mytownmysymptom/db/validator/db_validator.dart';
 
 class ModelMeta {
   //  Property
