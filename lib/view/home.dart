@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mytownmysymptom/config.dart';
+import 'package:mytownmysymptom/model/hospital.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,6 +12,17 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("1st Page"),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Text(Hospital.keys.join(", "))
+          ],
+        ),
+      ),
+    );
   }
 }
