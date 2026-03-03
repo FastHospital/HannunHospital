@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mytownmysymptom/config.dart';
-import 'package:mytownmysymptom/view/google_map.dart';
 import 'package:mytownmysymptom/view/home.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Gmap(),
+      home: Home(),
     );
   }
 }

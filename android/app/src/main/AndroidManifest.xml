@@ -1,15 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+=======
+>>>>>>> 632bc708deb9c01a8a89afd81a7b6dcd37ce7e4f
     <application
         android:label="mytownmysymptom"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+<<<<<<< HEAD
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${googleMapsApiKey}" 
         />
+=======
+>>>>>>> 632bc708deb9c01a8a89afd81a7b6dcd37ce7e4f
         <activity
             android:name=".MainActivity"
             android:exported="true"
