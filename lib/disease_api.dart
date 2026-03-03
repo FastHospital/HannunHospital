@@ -14,14 +14,22 @@ class DiseaseApi {
     final res = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"symptoms": symptoms, "top_k": topK}),
+      body: jsonEncode({
+        "symptoms": symptoms,
+        "top_k": topK,
+      }),
     );
 
     if (res.statusCode != 200) {
       throw Exception('API Error ${res.statusCode}: ${res.body}');
     }
 
-    final json = jsonDecode(res.body);
-    return json["top_k"] as List<dynamic>;
+    final decoded = jsonDecode(res.body);
+
+    if (decoded is Map && decoded["top_k"] is List) {
+      return decoded["top_k"];
+    } else {
+      throw Exception("Unexpected response format: ${res.body}");
+    }
   }
 }
