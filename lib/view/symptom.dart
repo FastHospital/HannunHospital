@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(const MyApp());
 
@@ -13,15 +15,65 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// ------------------------------
+/// API 클라이언트 (서버 호출)
+/// ------------------------------
+class DiseaseApi {
+  // Android 에뮬레이터: http://10.0.2.2:8000
+  // 실기기: http://내PC_IP:8000
+  final String baseUrl;
+  DiseaseApi(this.baseUrl);
+
+  Future<List<dynamic>> predictTopK({
+    required List<String> symptoms,
+    int topK = 3,
+  }) async {
+    final url = Uri.parse('$baseUrl/predict');
+
+    final res = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"symptoms": symptoms, "top_k": topK}),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception('API Error ${res.statusCode}: ${res.body}');
+    }
+
+    final json = jsonDecode(res.body);
+    return json["top_k"] as List<dynamic>;
+  }
+}
+
 class SymptomScreen extends StatefulWidget {
   const SymptomScreen({super.key});
   @override
-  State<SymptomScreen> createState() =>
-      _SymptomScreenState();
+  State<SymptomScreen> createState() => _SymptomScreenState();
 }
 
 class _SymptomScreenState extends State<SymptomScreen> {
   String filter = "전체보기";
+
+  // ✅ 서버 API
+  final api = DiseaseApi('http://10.0.2.2:8000'); // 에뮬레이터 기준
+  bool loading = false;
+  List<dynamic> lastResult = [];
+
+  /// ✅ 한글 UI 라벨(줄바꿈 제거된 key) -> 모델 feature 컬럼명(Training.csv 컬럼명) 매핑
+  /// ⚠️ 아래 영어 값은 반드시 Training.csv 컬럼명과 100% 일치해야 함
+  final Map<String, String> symptomToFeature = const {
+    "고열": "high_fever",
+    "미열": "mild_fever",
+    "오한": "chills",
+    "가려움": "itching",
+    "지속적재채기": "continuous_sneezing",
+    "피부발진": "skin_rash",
+    "기침": "cough",
+    "가래": "phlegm",
+    "침삼킬때가려움": "throat_irritation",
+    // "기타": "other", // 모델 컬럼에 없을 가능성이 커서 비추천(없으면 자동 무시됨)
+  };
+
   final List<String> menuItems = const [
     "전체보기",
     "발열 / 감염 관련",
@@ -67,17 +119,16 @@ class _SymptomScreenState extends State<SymptomScreen> {
             Expanded(
               child: GridView.builder(
                 padding: EdgeInsets.zero,
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 2.25,
-                    ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.25,
+                ),
                 itemCount: symptoms.length,
                 itemBuilder: (context, i) {
                   final label = symptoms[i];
-                  final key = label.replaceAll("\n", "");
+                  final key = label.replaceAll("\n", ""); // 선택 key(줄바꿈 제거)
                   final isSelected = selected.contains(key);
 
                   return InkWell(
@@ -94,16 +145,10 @@ class _SymptomScreenState extends State<SymptomScreen> {
                     child: Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? primaryBlue
-                            : chipGray,
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ),
+                        color: isSelected ? primaryBlue : chipGray,
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: isSelected
-                              ? primaryBlue
-                              : borderGray,
+                          color: isSelected ? primaryBlue : borderGray,
                           width: 1,
                         ),
                       ),
@@ -111,9 +156,7 @@ class _SymptomScreenState extends State<SymptomScreen> {
                         label,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : skyText,
+                          color: isSelected ? Colors.white : skyText,
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
                           height: 1.1,
@@ -124,22 +167,21 @@ class _SymptomScreenState extends State<SymptomScreen> {
                 },
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             if (selected.isNotEmpty)
               _SelectedSummaryBar(
                 count: selected.length,
                 onTap: _openSelectedBottomSheet,
               ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               height: 44,
               child: ElevatedButton(
-                onPressed: selected.isEmpty ? null : () {},
+                onPressed: selected.isEmpty || loading ? null : _onPredictPressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryBlue,
-                  disabledBackgroundColor:
-                      Colors.grey.shade300,
+                  disabledBackgroundColor: Colors.grey.shade300,
                   foregroundColor: Colors.white,
                   disabledForegroundColor: Colors.black54,
                   elevation: 0,
@@ -147,17 +189,109 @@ class _SymptomScreenState extends State<SymptomScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text(
-                  "증상확인하기",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                child: loading
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text(
+                        "증상확인하기",
+                        style: TextStyle(fontWeight: FontWeight.w800),
+                      ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _onPredictPressed() async {
+    setState(() => loading = true);
+
+    try {
+      // 한글 선택 key -> 영어 feature로 변환 (매핑 없는 건 자동 제외)
+      final features = selected
+          .map((k) => symptomToFeature[k.trim()])
+          .whereType<String>()
+          .toList();
+
+      if (features.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("서버로 보낼 증상(feature) 매핑이 없어요.")),
+        );
+        return;
+      }
+
+      final res = await api.predictTopK(symptoms: features, topK: 3);
+      setState(() => lastResult = res);
+
+      if (!mounted) return;
+      _showResultBottomSheet(res);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("예측 실패: $e")),
+      );
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  void _showResultBottomSheet(List<dynamic> items) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "예측 결과 Top3",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 12),
+                ...items.map((e) {
+                  final m = e as Map<String, dynamic>;
+                  final disease = (m["disease"] ?? "").toString();
+                  final prob = (m["prob"] as num?)?.toDouble() ?? 0.0;
+                  final desc = (m["description"] ?? "").toString();
+                  final precautions = (m["precautions"] as List?)?.join(", ") ?? "";
+
+                  return ListTile(
+                    title: Text(
+                      "$disease  (${(prob * 100).toStringAsFixed(1)}%)",
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    subtitle: Text(
+                      "${desc.isNotEmpty ? desc : "설명 없음"}\n"
+                      "${precautions.isNotEmpty ? "주의: $precautions" : ""}",
+                    ),
+                    isThreeLine: true,
+                  );
+                }),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryBlue,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text("닫기"),
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -170,8 +304,7 @@ class _SymptomScreenState extends State<SymptomScreen> {
         final items = selected.toList()..sort();
         return _SelectedBottomSheet(
           items: items,
-          onRemove: (name) =>
-              setState(() => selected.remove(name)),
+          onRemove: (name) => setState(() => selected.remove(name)),
           onClear: () => setState(() => selected.clear()),
         );
       },
@@ -204,11 +337,11 @@ class _SelectedSummaryBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Text(
+            const Text(
               "현재 증상",
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Text(
               "$count가지",
               style: const TextStyle(
@@ -217,7 +350,7 @@ class _SelectedSummaryBar extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Icon(
+            const Icon(
               Icons.keyboard_arrow_up,
               size: 20,
               color: Colors.black54,
@@ -272,10 +405,10 @@ class _SelectedBottomSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(99),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               children: [
-                Text(
+                const Text(
                   "현재 나의 증상은",
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
@@ -285,11 +418,11 @@ class _SelectedBottomSheet extends StatelessWidget {
                 const Spacer(),
                 TextButton(
                   onPressed: onClear,
-                  child: Text("전체삭제"),
+                  child: const Text("전체삭제"),
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -302,7 +435,7 @@ class _SelectedBottomSheet extends StatelessWidget {
                   )
                   .toList(),
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             SizedBox(
               width: double.infinity,
               height: 44,
@@ -316,11 +449,9 @@ class _SelectedBottomSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "증상선택하기",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
             ),
@@ -342,10 +473,7 @@ class _ChipPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xFFF3F3F3),
         borderRadius: BorderRadius.circular(999),
@@ -356,15 +484,13 @@ class _ChipPill extends StatelessWidget {
         children: [
           Text(
             text,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
-          SizedBox(width: 6),
+          const SizedBox(width: 6),
           InkWell(
             onTap: onRemove,
             borderRadius: BorderRadius.circular(999),
-            child: Icon(
+            child: const Icon(
               Icons.close,
               size: 16,
               color: Colors.black54,
@@ -376,8 +502,7 @@ class _ChipPill extends StatelessWidget {
   }
 }
 
-class DropdownAppBar extends StatefulWidget
-    implements PreferredSizeWidget {
+class DropdownAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String value;
   final List<String> items;
   final ValueChanged<String> onChanged;
@@ -393,8 +518,7 @@ class DropdownAppBar extends StatefulWidget
   Size get preferredSize => const Size.fromHeight(56);
 
   @override
-  State<DropdownAppBar> createState() =>
-      _DropdownAppBarState();
+  State<DropdownAppBar> createState() => _DropdownAppBarState();
 }
 
 class _DropdownAppBarState extends State<DropdownAppBar> {
@@ -457,9 +581,7 @@ class _DropdownAppBarState extends State<DropdownAppBar> {
                         BoxShadow(
                           blurRadius: 18,
                           offset: const Offset(0, 10),
-                          color: Colors.black.withOpacity(
-                            0.10,
-                          ),
+                          color: Colors.black.withOpacity(0.10),
                         ),
                       ],
                     ),
@@ -467,67 +589,45 @@ class _DropdownAppBarState extends State<DropdownAppBar> {
                       top: false,
                       bottom: false,
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          16,
-                          8,
-                          16,
-                          12,
-                        ),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: List.generate(
-                            widget.items.length,
-                            (i) {
-                              final e = widget.items[i];
-                              final selected =
-                                  e == widget.value;
+                          children: List.generate(widget.items.length, (i) {
+                            final e = widget.items[i];
+                            final selected = e == widget.value;
 
-                              return InkWell(
-                                onTap: () {
-                                  widget.onChanged(e);
-                                  _remove();
-                                },
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      12,
-                                    ),
-                                child: Container(
-                                  width: double.infinity,
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 12,
-                                      ),
-                                  decoration: BoxDecoration(
+                            return InkWell(
+                              onTap: () {
+                                widget.onChanged(e);
+                                _remove();
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: selected
+                                      ? const Color(0xFFF3F8FF)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  e,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight:
+                                        selected ? FontWeight.w900 : FontWeight.w700,
                                     color: selected
-                                        ? const Color(
-                                            0xFFF3F8FF,
-                                          )
-                                        : Colors
-                                              .transparent,
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          12,
-                                        ),
-                                  ),
-                                  child: Text(
-                                    e,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: selected
-                                          ? FontWeight.w900
-                                          : FontWeight.w700,
-                                      color: selected
-                                          ? const Color(
-                                              0xFF2F7DFF,
-                                            )
-                                          : Colors.black87,
-                                    ),
+                                        ? const Color(0xFF2F7DFF)
+                                        : Colors.black87,
                                   ),
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          }),
                         ),
                       ),
                     ),
@@ -565,9 +665,7 @@ class _DropdownAppBarState extends State<DropdownAppBar> {
             onTap: _toggle,
             child: Container(
               height: widget.preferredSize.height,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
@@ -594,9 +692,7 @@ class _DropdownAppBarState extends State<DropdownAppBar> {
                     ),
                   ),
                   Icon(
-                    isOpen
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
+                    isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                     size: 24,
                     color: Colors.black87,
                   ),
