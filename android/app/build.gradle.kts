@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+
+val googleMapsApiKey: String = localProperties.getProperty("googleMapsApiKey") ?: ""
+
+=======
+>>>>>>> 632bc708deb9c01a8a89afd81a7b6dcd37ce7e4f
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -28,6 +41,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+<<<<<<< HEAD
+        manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKey
+=======
+>>>>>>> 632bc708deb9c01a8a89afd81a7b6dcd37ce7e4f
     }
 
     buildTypes {
