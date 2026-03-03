@@ -15,9 +15,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// ------------------------------
-/// API 클라이언트 (서버 호출)
-/// ------------------------------
 class DiseaseApi {
   // Android 에뮬레이터: http://10.0.2.2:8000
   // 실기기: http://내PC_IP:8000
@@ -54,13 +51,11 @@ class SymptomScreen extends StatefulWidget {
 class _SymptomScreenState extends State<SymptomScreen> {
   String filter = "전체보기";
 
-  // ✅ 서버 API
   final api = DiseaseApi('http://10.0.2.2:8000'); // 에뮬레이터 기준
   bool loading = false;
   List<dynamic> lastResult = [];
 
-  /// ✅ 한글 UI 라벨(줄바꿈 제거된 key) -> 모델 feature 컬럼명(Training.csv 컬럼명) 매핑
-  /// ⚠️ 아래 영어 값은 반드시 Training.csv 컬럼명과 100% 일치해야 함
+  
   final Map<String, String> symptomToFeature = const {
     "고열": "high_fever",
     "미열": "mild_fever",
@@ -71,7 +66,7 @@ class _SymptomScreenState extends State<SymptomScreen> {
     "기침": "cough",
     "가래": "phlegm",
     "침삼킬때가려움": "throat_irritation",
-    // "기타": "other", // 모델 컬럼에 없을 가능성이 커서 비추천(없으면 자동 무시됨)
+    
   };
 
   final List<String> menuItems = const [
