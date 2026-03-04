@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytownmysymptom/config.dart';
+import 'package:mytownmysymptom/view/hello.dart';
 import 'package:mytownmysymptom/view/home.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -10,7 +11,8 @@ Future<void> deleteLocalDbOnStart() async {
 
   await deleteDatabase(path);
 }
-void main() async{
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await deleteLocalDbOnStart();
 
@@ -25,9 +27,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(
+          seedColor: Colors.deepPurple,
+        ),
       ),
-      home: Home(),
+      home: Hello(), // home: Home(),
     );
   }
 }

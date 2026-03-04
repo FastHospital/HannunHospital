@@ -10,13 +10,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      home: const HomeLikeScreen(),
+      home: const Hello(),
     );
   }
 }
 
-class HomeLikeScreen extends StatelessWidget {
-  const HomeLikeScreen({super.key});
+class Hello extends StatelessWidget {
+  const Hello({super.key});
   static const Color kBlue = Color(0xFF2F8CFF);
   static const Color kBlueSoft = Color(0xFFEEF6FF);
   @override
