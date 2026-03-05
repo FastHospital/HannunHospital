@@ -10,7 +10,7 @@ class Filter extends StatefulWidget {
 }
 
 class _FilterState extends State<Filter> {
-  String filter = "전체보기";
+  String filter = "전체보기"; //
 
   final api = DiseaseApi('http://10.0.2.2:8000');
   bool loading = false;
