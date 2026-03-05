@@ -27,11 +27,11 @@ class SelectedSummaryBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Text(
+            Text(
               "현재 증상",
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             Text(
               "$count가지",
               style: const TextStyle(
@@ -40,7 +40,7 @@ class SelectedSummaryBar extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            const Icon(
+            Icon(
               Icons.keyboard_arrow_up,
               size: 20,
               color: Colors.black54,
@@ -96,10 +96,10 @@ class SelectedBottomSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(99),
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Row(
               children: [
-                const Text(
+                Text(
                   "현재 나의 증상은",
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
@@ -118,7 +118,7 @@ class SelectedBottomSheet extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -131,7 +131,7 @@ class SelectedBottomSheet extends StatelessWidget {
                   )
                   .toList(),
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             SizedBox(
               width: double.infinity,
               height: 44,
@@ -145,7 +145,7 @@ class SelectedBottomSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   "증상선택하기",
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
@@ -190,11 +190,11 @@ class _ChipPill extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(width: 6),
+          SizedBox(width: 6),
           InkWell(
             onTap: onRemove,
             borderRadius: BorderRadius.circular(999),
-            child: const Icon(
+            child: Icon(
               Icons.close,
               size: 16,
               color: Colors.black54,

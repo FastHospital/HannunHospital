@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytownmysymptom/theme/app_color.dart';
+import 'package:mytownmysymptom/view/filter.dart';
 import 'package:mytownmysymptom/view/symptom.dart';
 import '../widgets/action_tile.dart';
 import '../widgets/input_pill.dart';
@@ -104,7 +105,7 @@ class Hello extends StatelessWidget {
                         runSpacing: 18,
                         children: [
                           ActionTile(
-                            label: "증상보기",
+                            label: "전체증상",
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -116,13 +117,13 @@ class Hello extends StatelessWidget {
                             },
                           ),
                           ActionTile(
-                            label: "전체보기",
+                            label: "필터증상",
                             onTap: () {
-                              ScaffoldMessenger.of(
+                              Navigator.push(
                                 context,
-                              ).showSnackBar(
-                                const SnackBar(
-                                  content: Text("준비중이에요!"),
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const Filter(),
                                 ),
                               );
                             },

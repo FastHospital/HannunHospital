@@ -45,7 +45,7 @@ class InputPill extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           InkWell(
             onTap: onSendTap,
             borderRadius: BorderRadius.circular(999),
@@ -56,7 +56,7 @@ class InputPill extends StatelessWidget {
                 color: AppColors.blue,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_upward_rounded,
                 color: Colors.white,
                 size: 18,
