@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mytownmysymptom/config.dart';
 import 'package:mytownmysymptom/view/hello.dart';
-import 'package:mytownmysymptom/view/home.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 Future<void> deleteLocalDbOnStart() async {
   final dbPath = await getDatabasesPath();
   final path = join(dbPath, rDBName);
-
+  //final path = join(dbPath, '$rDBName$rDBFileExt');
   await deleteDatabase(path);
 }
 
