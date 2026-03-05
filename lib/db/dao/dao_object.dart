@@ -22,14 +22,14 @@ final String dbName = '$rDBName$rDBFileExt';
 final int dVersion = rVersion;
 
 //  AppDatabase onCreate
-class RDB {
+class RDBObj {
   static Database? _db;
 
-  static Future<Database> instance(String dbName, int dVersion) async {
+  static Future<Database> instance() async {
     if (_db != null) return _db!;
 
     final path = join(await getDatabasesPath(), dbName);
-
+    print('path:${path} - ${dbName}');
     _db = await openDatabase(
       path, 
       version: dVersion,
@@ -41,7 +41,7 @@ class RDB {
         // Create Hospital
         await db.execute('''
             Create Table Hospital(
-              id INTEGER PRIMARY KEY AUTO INCREMENT,
+              id INTEGER PRIMARY KEY autoincrement,
               name Text,
               emergencyRoomName Text,
               type Text,
@@ -69,21 +69,18 @@ class RDB {
   }
 }
 
-class RDAO<T> {
-  final String dbName;
+class RDAOObj<T> {
   final String tableName;
-  final int dVersion;
   final T Function(Map<String, Object?>) fromMap;
 
-  RDAO({
-    required this.dbName,
+  RDAOObj({
     required this.tableName,
-    required this.dVersion,
     required this.fromMap,
   });
 
+
   Future<List<T>> queryAll() async {
-    final db = await RDB.instance(dbName, dVersion);
+    final db = await RDBObj.instance();
     final sql = 'SELECT * FROM $tableName';
     final results = await db.rawQuery(sql);
     return results.map((e) => fromMap(e)).toList();
@@ -94,7 +91,7 @@ class RDAO<T> {
     if (keyList.isEmpty) {
       throw ArgumentError('keyList must NOT be empty');
     }
-    final db = await RDB.instance(dbName, dVersion);
+    final db = await RDBObj.instance();
     final keyClause = keyList.keys.map((key) => '$key = ?').join(' AND ');
     final values = keyList.values.toList();
     final sql = 'SELECT * FROM $tableName WHERE $keyClause';
@@ -109,7 +106,7 @@ class RDAO<T> {
   //  DBHandler.insertK(Tablename.toMap());
   Future<int> insertK(Map<String, Object?> data) async {
     try {
-      final db = await RDB.instance(dbName, dVersion);
+      final db = await RDBObj.instance();
 
       final keys = data.keys.join(', ');
       final placeholders = List.filled(data.length, '?').join(', ');
@@ -127,6 +124,30 @@ class RDAO<T> {
     }
   }
 
+  Future<int> insertKs(List<dynamic> dataList) async {
+    try {
+      final db = await RDBObj.instance();
+      int i = 0;
+      for (i; i<dataList.length; i++) {
+        Map<String,Object?> data = dataList[i];
+        final keys = data.keys.join(', ');
+        final placeholders = List.filled(data.length, '?').join(', ');
+        final sql = 'INSERT INTO $tableName ($keys) VALUES ($placeholders)';
+        await db.rawInsert(sql, data.values.toList());
+      }
+
+     
+      return i;
+    } on DatabaseException catch (e) {
+      print('INSERT DB Error in $tableName → $e');
+      return -1;
+    } catch (e) {
+      print('UNKNOWN INSERT Error in $tableName → $e');
+      return -1;
+    }
+  }
+
+
   // DBHandler.updateK(Tablename.toMap(), KeyListTable.toMap())
   Future<int> updateK(
     Map<String, Object?> data,
@@ -138,7 +159,7 @@ class RDAO<T> {
     if (keyList.isEmpty) {
       throw ArgumentError('keyList must NOT be empty');
     }
-    final db = await RDB.instance(dbName, dVersion);
+    final db = await RDBObj.instance();
 
     final setClause = data.keys.map((k) => '$k = ?').join(', ');
     final keyClause = keyList.keys.map((k) => '$k = ?').join(' AND ');

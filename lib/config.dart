@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:mytownmysymptom/db/dao/dao_custom.dart';
+import 'package:mytownmysymptom/db/dao/dao_object.dart';
 import 'package:mytownmysymptom/model/hospital.dart';
 
 //  Configuration of the App

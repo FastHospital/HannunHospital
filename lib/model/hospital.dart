@@ -9,6 +9,7 @@
 
   DateTime MUST converted using value.toIso8601String()
   Stored DateTime in String MUST converted using DateTime.parse(value);
+  
 */
 
 class Hospital {
@@ -16,39 +17,92 @@ class Hospital {
   int? id;
   final String name;
   final String phone;
-  final double lat;
+
+  // GT: 추가된 필드
+  final String type;
+  final String city;        // 서울특별시...
+  final String district;    // 구 정보 (강남구..)
+  final String address;     // 주소
+  final int? generalEmergencyAvailable;
+  final int? generalEmergencyTotal;
+  // final int? childEmergencyAvailable;
+  // final int? childEmergencyTotal;
+  // final bool? deliveryRoomAvailable;
+  // final int? deliveryRoomTotal;
+  // END of GT: 추가된 필드
+
+  final double lat;       
   final double lng;
-  final DateTime openingHour;
-  final DateTime closingHour;
+  final DateTime? openingHour;
+  final DateTime? closingHour;
 
   // Constructor
   Hospital({
     this.id, 
     required this.name, 
-    required this.phone, 
+    required this.phone,
+
+    required this.type,
+    required this.city,
+    required this.district,
+    required this.address, 
+    this.generalEmergencyAvailable,
+    this.generalEmergencyTotal,
+    // this.childEmergencyAvailable,
+    // this.childEmergencyTotal,
+    // this.deliveryRoomAvailable,
+    // this.deliveryRoomTotal,
+
     required this.lat,
     required this.lng,
-    required this.openingHour,
-    required this.closingHour,
+    this.openingHour,
+    this.closingHour,
   });
 
   Hospital.fromMap(Map<String, Object?> map)
-    : id = map['id'] as int?,
+  : id = map['id'] as int?,
       name = map['name'] as String,
       phone = map['phone'] as String,
+
+
+      // GT: 추가된 필드
+      type = map['type'] as String,
+      city = map['city'] as String,
+      district = map['district'] as String,
+      address = map['address'] as String,
+
+      generalEmergencyAvailable = map['generalEmergencyAvailable'] != null ?  int.parse(map['generalEmergencyAvailable'].toString()) : 0,
+      generalEmergencyTotal = map['generalEmergencyTotal']!=null ? int.parse(map['generalEmergencyTotal'].toString()) : 0,
+      // childEmergencyAvailable = map['childEmergencyAvailable'] as int,
+      // childEmergencyTotal = map['childEmergencyTotal'] as int,
+      // deliveryRoomAvailable =  map['childEmergencyTotal'] as bool,
+      // deliveryRoomTotal = map['deliveryRoomTotal'] as int,
+      // END of GT: 추가된 필드
+
       lat = (map['lat'] as num).toDouble(),
       lng = (map['lng'] as num).toDouble(),
-      closingHour = DateTime.parse(map['closingHour'] as String),
-      openingHour = DateTime.parse(map['openingHour'] as String);
-
+      closingHour = map['closingHour'] != null ? DateTime.parse(map['closingHour'] as String) : DateTime.now(),
+      openingHour = map['openingHour'] != null ? DateTime.parse(map['openingHour'] as String) : DateTime.now();
+      
   Map<String, Object?> toMap({bool includeId = false}) {
-    final map = <String, Object?>{
+
+    final map = {
       'name': name, 
-      'phone': phone, 
+      'phone': phone,
+      
+      // GT: 추가된 필드
+      'type' : type,
+      'city' : city,
+      'district' : district,
+      'address' : address,
+      'generalEmergencyAvailable' : generalEmergencyAvailable,
+      'generalEmergencyTotal' : generalEmergencyTotal, 
+      // END of GT: 추가된 필드
+
       'lat': lat,
       'lng': lng,
-      'openingHour': openingHour.toIso8601String(),
-      'closingHour': closingHour.toIso8601String()
+      //'openingHour': openingHour.toIso8601String(),
+      //'closingHour': closingHour.toIso8601String()
     };
 
     if (includeId) {
@@ -61,11 +115,35 @@ class Hospital {
   static const List<String> keys = [
     'id', 
     'name', 
-    'phone', 
+    'phone',
+    
+    // GT: 추가된 필드
+    'type',
+    'city',
+    'district',
+    'address'
+    'generalEmergencyAvailable',
+    'generalEmergencyTotal',
+    // END of GT: 추가된 필드
+
     'lat',
     'lng',
     "openingHour",
     "closingHour"
     ];
-  static const List<String> values = ['primary key integer autoincreament', 'text', 'REAL'];
+  static const List<String> values = [
+    'primary key integer autoincreament', 
+    'text', 
+    'text',
+    'text',
+    'text',
+    'text',
+    'text',
+    'integer',
+    'integer',
+    'REAL',
+    'REAL',
+    'datetime',
+    'datetime'
+  ];
 }
