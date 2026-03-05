@@ -3,14 +3,13 @@ import 'package:mytownmysymptom/service/disease_api.dart';
 import '../widgets/dropdown_app_bar.dart';
 import '../widgets/selected_bottom_sheet.dart';
 
-class SymptomScreen extends StatefulWidget {
-  const SymptomScreen({super.key});
+class Filter extends StatefulWidget {
+  const Filter({super.key});
   @override
-  State<SymptomScreen> createState() =>
-      _SymptomScreenState();
+  State<Filter> createState() => _FilterState();
 }
 
-class _SymptomScreenState extends State<SymptomScreen> {
+class _FilterState extends State<Filter> {
   String filter = "전체보기";
 
   final api = DiseaseApi('http://10.0.2.2:8000');
@@ -37,21 +36,27 @@ class _SymptomScreenState extends State<SymptomScreen> {
     "통증 관련",
   ];
 
-  final List<String> symptoms = const [
-    "고열",
-    "미열",
-    "오한",
-    "가려움",
-    "지속적\n재채기",
-    "피부\n발진",
-    "기침",
-    "가래",
-    "침삼킬때\n가려움",
-    "기타",
-  ];
+  final Map<String, List<String>> symptomsByFilter = const {
+    "전체보기": [
+      "고열",
+      "미열",
+      "오한",
+      "가려움",
+      "지속적\n재채기",
+      "피부\n발진",
+      "기침",
+      "가래",
+      "침삼킬때\n가려움",
+      "기타",
+    ],
+    "발열 / 감염 관련": ["고열", "미열", "오한"],
+    "호흡기 관련": ["지속적\n재채기", "기침", "가래", "침삼킬때\n가려움"],
+    "피부 관련": ["가려움", "피부\n발진"],
+    "통증 관련": ["기타"],
+  };
 
-  // final Set<String> selected = {"미열", "오한"};
-  final Set<String> selected = {};
+  final Set<String> selected = <String>{};
+
   static const Color primaryBlue = Color(0xFF2F7DFF);
   static const Color skyText = Color(0xFF5DB6FF);
   static const Color chipGray = Color(0xFFF2F2F2);
@@ -59,6 +64,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
   @override
   Widget build(BuildContext context) {
     final borderGray = Colors.grey.shade300;
+
+    final filteredSymptoms =
+        symptomsByFilter[filter] ?? const <String>[];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -69,8 +77,8 @@ class _SymptomScreenState extends State<SymptomScreen> {
           setState(() {
             filter = v;
             selected.clear();
-            lastResult = []; // (선택) 이전 예측 결과도 초기화
-            loading = false; // (선택) 로딩 중이면 해제
+            lastResult = [];
+            loading = false;
           });
         },
       ),
@@ -88,9 +96,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
                       mainAxisSpacing: 12,
                       childAspectRatio: 2.25,
                     ),
-                itemCount: symptoms.length,
+                itemCount: filteredSymptoms.length,
                 itemBuilder: (context, i) {
-                  final label = symptoms[i];
+                  final label = filteredSymptoms[i];
                   final key = label.replaceAll("\n", "");
                   final isSelected = selected.contains(key);
 
@@ -138,13 +146,13 @@ class _SymptomScreenState extends State<SymptomScreen> {
                 },
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             if (selected.isNotEmpty)
               SelectedSummaryBar(
                 count: selected.length,
                 onTap: _openSelectedBottomSheet,
               ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               height: 44,
@@ -164,14 +172,14 @@ class _SymptomScreenState extends State<SymptomScreen> {
                   ),
                 ),
                 child: loading
-                    ? SizedBox(
+                    ? const SizedBox(
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                         ),
                       )
-                    : Text(
+                    : const Text(
                         "증상확인하기",
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
@@ -305,15 +313,13 @@ class _SymptomScreenState extends State<SymptomScreen> {
             return SelectedBottomSheet(
               items: items,
               onRemove: (name) {
-                setState(
-                  () => selected.remove(name),
-                ); // 부모 갱신
+                setState(() => selected.remove(name));
                 setModalState(() {});
               },
               onClear: () {
-                setState(() => selected.clear()); // 부모 갱신
+                setState(() => selected.clear());
                 setModalState(() {});
-                Navigator.pop(context); // (원하면 닫기 유지)
+                Navigator.pop(context); // 원하면 닫기 유지
               },
             );
           },
