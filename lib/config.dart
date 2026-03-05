@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mytownmysymptom/db/dao/dao_custom.dart';
+import 'package:mytownmysymptom/db/dao/dao_object.dart';
 import 'package:mytownmysymptom/model/hospital.dart';
 
 //  Configuration of the App
@@ -15,12 +15,14 @@ import 'package:mytownmysymptom/model/hospital.dart';
 //  DB
 //  For use
 //  '${rDBName}${rDBFileExt}';
-const String rDBName = 'DBname';  //  Database Name
+const String rDBName = 'hannunhospital';  //  Database Name
 const String rDBFileExt = '.db';
 const int rVersion = 1;
 
 // DB Handlers
-final hospitalHandler = RDAO(dbName: rDBName, tableName: "Hospital", dVersion: rVersion, fromMap: Hospital.fromMap);
+final hospitalHandler = RDAOObj(tableName: "Hospital", fromMap: Hospital.fromMap);
+
+
 //  Formats
 const String dateFormat = 'yyyy-MM-dd'; //  DateTime Format
 const String dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';  //  DateTime Format to second 
