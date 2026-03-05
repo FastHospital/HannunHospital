@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:mytownmysymptom/db/dao/dao_object.dart';
+import 'package:mytownmysymptom/db/dao/dao_custom.dart';
 import 'package:mytownmysymptom/model/hospital.dart';
 
 //  Configuration of the App
@@ -21,12 +21,20 @@ const int rVersion = 1;
 
 // Point 1
 // DB Handlers
-final hospitalHandler = RDAO(dbName: rDBName, tableName: "Hospital", dVersion: rVersion, fromMap: Hospital.fromMap);
-final hoscatHandler = RDAO(dbName: rDBName, tableName: "HospitalCategory", dVersion: rVersion, fromMap: Hospital.fromMap);
-final categoryHandler = RDAO(dbName: rDBName, tableName: "Category", dVersion: rVersion, fromMap: Hospital.fromMap);
-final diseaseHandler = RDAO(dbName: rDBName, tableName: "Disease", dVersion: rVersion, fromMap: Hospital.fromMap);
-final symptomsHandler = RDAO(dbName: rDBName, tableName: "Symptoms", dVersion: rVersion, fromMap: Hospital.fromMap);
-final sympdisHandler = RDAO(dbName: rDBName, tableName: "SymptomDisease", dVersion: rVersion, fromMap: Hospital.fromMap);
+// final hospitalHandler = RDAO(dbName: rDBName, tableName: "Hospital", dVersion: rVersion, fromMap: Hospital.fromMap);
+// final hoscatHandler = RDAO(dbName: rDBName, tableName: "HospitalCategory", dVersion: rVersion, fromMap: Hospital.fromMap);
+// final categoryHandler = RDAO(dbName: rDBName, tableName: "Category", dVersion: rVersion, fromMap: Hospital.fromMap);
+// final diseaseHandler = RDAO(dbName: rDBName, tableName: "Disease", dVersion: rVersion, fromMap: Hospital.fromMap);
+// final symptomsHandler = RDAO(dbName: rDBName, tableName: "Symptoms", dVersion: rVersion, fromMap: Hospital.fromMap);
+// final sympdisHandler = RDAO(dbName: rDBName, tableName: "SymptomDisease", dVersion: rVersion, fromMap: Hospital.fromMap);
+final hospitalHandler = RDAO(tableName: "Hospital", fromMap: Hospital.fromMap);
+final hoscatHandler = RDAO(tableName: "HospitalCategory", fromMap: Hospital.fromMap);
+final categoryHandler = RDAO(tableName: "Category", fromMap: Hospital.fromMap);
+final diseaseHandler = RDAO(tableName: "Disease", fromMap: Hospital.fromMap);
+final symptomsHandler = RDAO(tableName: "Symptoms", fromMap: Hospital.fromMap);
+final sympdisHandler = RDAO(tableName: "SymptomDisease", fromMap: Hospital.fromMap);
+
+
 //  Formats
 const String dateFormat = 'yyyy-MM-dd'; //  DateTime Format
 const String dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';  //  DateTime Format to second 

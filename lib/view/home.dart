@@ -11,7 +11,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   
-  late final test;
+  var test = [];
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class _HomeState extends State<Home> {
         child: Column(
           children: [
             Text(Hospital.keys.join(", ")),
-            Text(test[0].name)
+            test.length> 0 ? Text(test[0].name) : Text('empty')
           ],
         ),
       ),
