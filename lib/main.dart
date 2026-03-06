@@ -5,6 +5,7 @@ import 'package:mytownmysymptom/config.dart';
 import 'package:mytownmysymptom/db/dao/dao_object.dart';
 import 'package:mytownmysymptom/model/hospital.dart';
 import 'package:mytownmysymptom/view/home.dart';
+import 'package:mytownmysymptom/view/stroke.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 // Read Json file.
@@ -84,7 +85,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Home(),
+      //home: Home(),
+      home: StrokePredictionScreen(),
     );
   }
 }
