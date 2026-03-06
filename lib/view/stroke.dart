@@ -8,7 +8,10 @@ class StrokePredictionScreen extends StatefulWidget {
 }
 
 class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
-  double age = 70.83;
+ 
+  DateTime selectedDate = DateTime(1980, 1, 1);
+  double age = 44.0; 
+
   double bmi = 34.0;
   double glucose = 225.0;
 
@@ -20,27 +23,38 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
   String workType = '민간';
   String smokingStatus = '흡연';
 
-  String resultText = '뇌졸중 가능성 있음';
+  String resultText = '데이터를 입력해주세요';
   bool isDark = false;
 
-  final List<String> workTypes = [
-    '민간',
-    '자영업',
-    '공무원',
-    '아동',
-    '무직',
-  ];
+  final List<String> workTypes = ['민간', '자영업', '공무원', '아동', '무직'];
+  final List<String> smokingOptions = ['비흡연', '과거 흡연', '흡연', '알 수 없음'];
 
-  final List<String> smokingOptions = [
-    '비흡연',
-    '과거 흡연',
-    '흡연',
-    '알 수 없음',
-  ];
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: isDark ? ThemeData.dark() : ThemeData.light(),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        // 단순 연도 계산 (필요시 만나이 로직으로 정교화 가능)
+        age = (DateTime.now().year - picked.year).toDouble();
+      });
+    }
+  }
 
   Future<void> predictStroke() async {
     setState(() {
-      resultText = '뇌졸중 가능성 있음';
+      resultText = '뇌졸중 가능성 있음 (나이: ${age.toInt()}세 기준)';
     });
   }
 
@@ -57,25 +71,11 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
       appBar: AppBar(
         backgroundColor: bgColor,
         elevation: 0,
-        title: Text(
-          '뇌졸중 예측 앱',
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.w700,
-            fontSize: 22,
-          ),
-        ),
+        title: Text('뇌졸중 예측', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            onPressed: () {
-              setState(() {
-                isDark = !isDark;
-              });
-            },
-            icon: Icon(
-              isDark ? Icons.dark_mode : Icons.light_mode,
-              color: textColor,
-            ),
+            onPressed: () => setState(() => isDark = !isDark),
+            icon: Icon(isDark ? Icons.dark_mode : Icons.light_mode, color: textColor),
           ),
         ],
       ),
@@ -83,20 +83,19 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           children: [
-            _sliderSection(
-              label: '나이',
-              valueText: age.toStringAsFixed(2),
-              value: age,
-              min: 0,
-              max: 100,
-              activeColor: accent,
+          
+            _datePickerSection(
+              label: '생년월일',
+              selectedDate: selectedDate,
+              age: age,
               textColor: textColor,
               dividerColor: lineColor,
-              onChanged: (v) => setState(() => age = v),
+              onTap: () => _selectDate(context),
             ),
+
             _sliderSection(
               label: 'BMI',
-              valueText: bmi.toStringAsFixed(2),
+              valueText: bmi.toStringAsFixed(1),
               value: bmi,
               min: 10,
               max: 60,
@@ -182,41 +181,78 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
             const SizedBox(height: 28),
             Center(
               child: SizedBox(
-                width: 220,
+                width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
                   onPressed: predictStroke,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: accent,
                     foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text(
-                    '뇌졸중 예측하기',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  child: const Text('뇌졸중 예측하기', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
             const SizedBox(height: 30),
-            Text(
-              '예측 결과: $resultText',
-              style: TextStyle(
-                color: textColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: lineColor),
+              ),
+              child: Text(
+                '예측 결과: $resultText',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 40),
           ],
         ),
       ),
+    );
+  }
+
+
+  Widget _datePickerSection({
+    required String label,
+    required DateTime selectedDate,
+    required double age,
+    required Color textColor,
+    required Color dividerColor,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 150,
+                  child: Text(
+                    label,
+                    style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    "${selectedDate.year}-${selectedDate.month}-${selectedDate.day} (${age.toInt()}세)",
+                    style: TextStyle(color: textColor, fontSize: 17, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                Icon(Icons.calendar_today, size: 20, color: textColor.withOpacity(0.6)),
+              ],
+            ),
+          ),
+        ),
+        Divider(color: dividerColor, thickness: 1, height: 22),
+      ],
     );
   }
 
@@ -237,43 +273,20 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
           children: [
             Expanded(
               flex: 3,
-              child: Text(
-                '$label:',
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: Text(label, style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w600)),
             ),
             Expanded(
               flex: 2,
-              child: Text(
-                valueText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: Text(valueText, textAlign: TextAlign.center, style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w600)),
             ),
             Expanded(
               flex: 5,
-              child: SliderTheme(
-                data: SliderThemeData(
-                  activeTrackColor: activeColor,
-                  inactiveTrackColor: Colors.grey.shade300,
-                  thumbColor: activeColor,
-                  overlayColor: activeColor.withValues(alpha: 0.15),
-                  trackHeight: 6,
-                ),
-                child: Slider(
-                  value: value,
-                  min: min,
-                  max: max,
-                  onChanged: onChanged,
-                ),
+              child: Slider(
+                value: value,
+                min: min,
+                max: max,
+                activeColor: activeColor,
+                onChanged: onChanged,
               ),
             ),
           ],
@@ -297,21 +310,12 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
         Row(
           children: [
             SizedBox(
-              width: 150,
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              width: 100,
+              child: Text(label, style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w600)),
             ),
             Expanded(
               child: Wrap(
-                alignment: WrapAlignment.spaceEvenly,
-                spacing: 10,
-                runSpacing: 8,
+                alignment: WrapAlignment.end,
                 children: options.map((item) {
                   return Row(
                     mainAxisSize: MainAxisSize.min,
@@ -320,22 +324,9 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
                         value: item,
                         groupValue: groupValue,
                         activeColor: activeColor,
-                        fillColor: WidgetStateProperty.resolveWith((states) {
-                          if (states.contains(WidgetState.selected)) {
-                            return activeColor;
-                          }
-                          return Colors.grey;
-                        }),
                         onChanged: onChanged,
                       ),
-                      Text(
-                        '$item',
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      Text('$item', style: TextStyle(color: textColor, fontSize: 16)),
                     ],
                   );
                 }).toList(),
@@ -363,39 +354,15 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
           children: [
             SizedBox(
               width: 150,
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: Text(label, style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w600)),
             ),
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: value,
                 dropdownColor: cardColor,
-                iconEnabledColor: textColor,
-                decoration: InputDecoration(
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: dividerColor),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: dividerColor),
-                  ),
-                ),
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                ),
-                items: items.map((e) {
-                  return DropdownMenuItem<String>(
-                    value: e,
-                    child: Text(e),
-                  );
-                }).toList(),
+                decoration: const InputDecoration(border: InputBorder.none),
+                style: TextStyle(color: textColor, fontSize: 17, fontWeight: FontWeight.w600),
+                items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: onChanged,
               ),
             ),

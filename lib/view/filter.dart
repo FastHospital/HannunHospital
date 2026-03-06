@@ -146,13 +146,13 @@ class _FilterState extends State<Filter> {
                 },
               ),
             ),
-            const SizedBox(height: 10),
+             SizedBox(height: 10),
             if (selected.isNotEmpty)
               SelectedSummaryBar(
                 count: selected.length,
                 onTap: _openSelectedBottomSheet,
               ),
-            const SizedBox(height: 10),
+             SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               height: 44,
