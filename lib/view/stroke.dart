@@ -12,48 +12,45 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
   double bmi = 34.0;
   double glucose = 225.0;
 
-  String gender = 'Male';
-  String residenceType = 'Urban';
-  int heartDisease = 1;
-  int hypertension = 1;
-  String everMarried = 'Yes';
-  String workType = 'Private';
-  String smokingStatus = 'smokes';
+  String gender = '남성';
+  String residenceType = '도시';
+  String heartDisease = '없음';
+  String hypertension = '없음';
+  String everMarried = '예';
+  String workType = '민간';
+  String smokingStatus = '흡연';
 
-  String resultText = 'Potential Stroke';
-  bool isDark = true;
+  String resultText = '뇌졸중 가능성 있음';
+  bool isDark = false;
 
   final List<String> workTypes = [
-    'Private',
-    'Self-employed',
-    'Govt_job',
-    'children',
-    'Never_worked',
+    '민간',
+    '자영업',
+    '공무원',
+    '아동',
+    '무직',
   ];
 
   final List<String> smokingOptions = [
-    'never smoked',
-    'formerly smoked',
-    'smokes',
-    'Unknown',
+    '비흡연',
+    '과거 흡연',
+    '흡연',
+    '알 수 없음',
   ];
 
   Future<void> predictStroke() async {
-
-
     setState(() {
-      resultText = 'Potential Stroke';
+      resultText = '뇌졸중 가능성 있음';
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isDark ? const Color(0xFF111118) : Colors.white;
-    final cardColor = isDark ? const Color(0xFF171720) : const Color(0xFFF5F5F7);
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final subTextColor = isDark ? Colors.white70 : Colors.black54;
-    final accent = const Color(0xFFD8B8FF);
-    final lineColor = isDark ? Colors.white12 : Colors.black12;
+    final bgColor = isDark ? const Color(0xFF111118) : const Color(0xFFF8FAFD);
+    final cardColor = isDark ? const Color(0xFF171720) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final accent = const Color(0xFF4A90E2);
+    final lineColor = isDark ? Colors.white12 : const Color(0xFFE0E6ED);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -61,7 +58,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
         backgroundColor: bgColor,
         elevation: 0,
         title: Text(
-          'Stroke Prediction App',
+          '뇌졸중 예측 앱',
           style: TextStyle(
             color: textColor,
             fontWeight: FontWeight.w700,
@@ -87,7 +84,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           children: [
             _sliderSection(
-              label: 'Age:',
+              label: '나이',
               valueText: age.toStringAsFixed(2),
               value: age,
               min: 0,
@@ -98,7 +95,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
               onChanged: (v) => setState(() => age = v),
             ),
             _sliderSection(
-              label: 'BMI:',
+              label: 'BMI',
               valueText: bmi.toStringAsFixed(2),
               value: bmi,
               min: 10,
@@ -109,7 +106,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
               onChanged: (v) => setState(() => bmi = v),
             ),
             _sliderSection(
-              label: 'Glucose Level:',
+              label: '혈당 수치',
               valueText: glucose.toStringAsFixed(0),
               value: glucose,
               min: 50,
@@ -120,52 +117,52 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
               onChanged: (v) => setState(() => glucose = v),
             ),
             _radioSection<String>(
-              label: 'Gender:',
+              label: '성별',
               groupValue: gender,
-              options: const ['Male', 'Female'],
+              options: const ['남성', '여성'],
               textColor: textColor,
               dividerColor: lineColor,
               activeColor: accent,
               onChanged: (v) => setState(() => gender = v!),
             ),
             _radioSection<String>(
-              label: 'Residence Type',
+              label: '거주 형태',
               groupValue: residenceType,
-              options: const ['Urban', 'Rural'],
+              options: const ['도시', '시골'],
               textColor: textColor,
               dividerColor: lineColor,
               activeColor: accent,
               onChanged: (v) => setState(() => residenceType = v!),
             ),
-            _radioSection<int>(
-              label: 'Heart Disease',
+            _radioSection<String>(
+              label: '심장 질환',
               groupValue: heartDisease,
-              options: const [0, 1],
+              options: const ['없음', '있음'],
               textColor: textColor,
               dividerColor: lineColor,
               activeColor: accent,
               onChanged: (v) => setState(() => heartDisease = v!),
             ),
-            _radioSection<int>(
-              label: 'Hypertension',
+            _radioSection<String>(
+              label: '고혈압',
               groupValue: hypertension,
-              options: const [0, 1],
+              options: const ['없음', '있음'],
               textColor: textColor,
               dividerColor: lineColor,
               activeColor: accent,
               onChanged: (v) => setState(() => hypertension = v!),
             ),
             _radioSection<String>(
-              label: 'Ever Married',
+              label: '기혼 여부',
               groupValue: everMarried,
-              options: const ['No', 'Yes'],
+              options: const ['아니오', '예'],
               textColor: textColor,
               dividerColor: lineColor,
               activeColor: accent,
               onChanged: (v) => setState(() => everMarried = v!),
             ),
             _dropdownSection(
-              label: 'Work Type',
+              label: '직업 유형',
               value: workType,
               items: workTypes,
               textColor: textColor,
@@ -174,7 +171,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
               onChanged: (v) => setState(() => workType = v!),
             ),
             _dropdownSection(
-              label: 'Smoking Status',
+              label: '흡연 상태',
               value: smokingStatus,
               items: smokingOptions,
               textColor: textColor,
@@ -190,17 +187,15 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
                 child: ElevatedButton(
                   onPressed: predictStroke,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark
-                        ? const Color(0xFF1E1E29)
-                        : const Color(0xFFE7E7EF),
-                    foregroundColor: textColor,
+                    backgroundColor: accent,
+                    foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
                   child: const Text(
-                    'Predict Stroke',
+                    '뇌졸중 예측하기',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -211,7 +206,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
             ),
             const SizedBox(height: 30),
             Text(
-              'Result: $resultText',
+              '예측 결과: $resultText',
               style: TextStyle(
                 color: textColor,
                 fontSize: 18,
@@ -243,7 +238,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
             Expanded(
               flex: 3,
               child: Text(
-                label,
+                '$label:',
                 style: TextStyle(
                   color: textColor,
                   fontSize: 18,
@@ -268,7 +263,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
               child: SliderTheme(
                 data: SliderThemeData(
                   activeTrackColor: activeColor,
-                  inactiveTrackColor: Colors.white24,
+                  inactiveTrackColor: Colors.grey.shade300,
                   thumbColor: activeColor,
                   overlayColor: activeColor.withValues(alpha: 0.15),
                   trackHeight: 6,
@@ -329,7 +324,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
                           if (states.contains(WidgetState.selected)) {
                             return activeColor;
                           }
-                          return Colors.white70;
+                          return Colors.grey;
                         }),
                         onChanged: onChanged,
                       ),
