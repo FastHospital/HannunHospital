@@ -46,6 +46,13 @@ dependencies:
   # intl
   intl: ^0.20.2
 
+  # 전화걸기
+  flutter_phone_direct_caller: ^2.2.1
+
+  # TTS
+  flutter_tts: ^4.2.5
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

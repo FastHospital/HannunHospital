@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mytownmysymptom/config.dart';
 import 'package:mytownmysymptom/db/dao/dao_object.dart';
 import 'package:mytownmysymptom/model/hospital.dart';
+import 'package:mytownmysymptom/view/hello.dart';
 import 'package:mytownmysymptom/view/home.dart';
 import 'package:mytownmysymptom/view/stroke.dart';
 import 'package:path/path.dart';
@@ -86,7 +87,7 @@ class MyApp extends StatelessWidget {
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
       //home: Home(),
-      home: StrokePredictionScreen(),
+      home: Hello(),
     );
   }
 }
