@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mytownmysymptom/theme/app_color.dart';
-import 'package:mytownmysymptom/view/filter.dart';
 import 'package:mytownmysymptom/view/google_map.dart';
 import 'package:mytownmysymptom/view/hospital_detail.dart';
+import 'package:mytownmysymptom/view/map.dart';
 import 'package:mytownmysymptom/view/stroke.dart';
-import 'package:mytownmysymptom/view/symptom.dart';
 import '../widgets/action_tile.dart';
 import '../widgets/input_pill.dart';
 
@@ -99,19 +98,21 @@ class Hello extends StatelessWidget {
                         spacing: 18,
                         runSpacing: 18,
                         children: [
-                          ActionTile(
-                            label: "전체증상",
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const SymptomScreen(),
-                                ),
-                              );
-                            },
-                          ),
+                          // ActionTile(
+                          
+                          //   label: "전체증상",
+                          //   onTap: () {
+                          //     Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //         builder: (_) => const SymptomScreen(),
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
                           ActionTile(
                             label: "필터증상",
+                            //label: "뇌졸중 예측",
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -143,15 +144,19 @@ class Hello extends StatelessWidget {
                             },
                           ),
                           ActionTile(
-                            label: "내 병원",
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("준비중이에요!")),
+                            label: "병원 지도",
+                             onTap: () {
+                             Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SeniorMapScreen(),
+                                ),
                               );
                             },
                           ),
                           ActionTile(
-                            label: "병원상세페이지 TEST",
+                            label: "병원상세 TEST",
+                            // label: "병원전화",
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -161,7 +166,6 @@ class Hello extends StatelessWidget {
                                   },
                                 ),
                               );
-
                               // ScaffoldMessenger.of(
                               //   context,
                               // ).showSnackBar(
