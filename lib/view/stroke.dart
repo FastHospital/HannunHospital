@@ -27,7 +27,7 @@ class _StrokePredictionScreenState extends State<StrokePredictionScreen> {
   bool isDark = false;
 
   final List<String> workTypes = ['민간', '자영업', '공무원', '아동', '무직'];
-  final List<String> smokingOptions = ['비흡연', '과거 흡연', '흡연', '알 수 없음'];
+  final List<String> smokingOptions = ['비흡연', '흡연'];
 
 
   Future<void> _selectDate(BuildContext context) async {

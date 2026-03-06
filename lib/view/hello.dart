@@ -3,7 +3,7 @@ import 'package:mytownmysymptom/theme/app_color.dart';
 import 'package:mytownmysymptom/view/google_map.dart';
 import 'package:mytownmysymptom/view/hospital_detail.dart';
 import 'package:mytownmysymptom/view/map.dart';
-import 'package:mytownmysymptom/view/stroke.dart';
+import 'package:mytownmysymptom/view/stroke2.dart';
 import '../widgets/action_tile.dart';
 import '../widgets/input_pill.dart';
 
@@ -117,7 +117,7 @@ class Hello extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => const StrokePredictionScreen(),
+                                  builder: (_) => const StrokePrediction2Screen(),
                                 ),
                               );
                             },
