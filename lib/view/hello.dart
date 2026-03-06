@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mytownmysymptom/theme/app_color.dart';
 import 'package:mytownmysymptom/view/filter.dart';
+import 'package:mytownmysymptom/view/google_map.dart';
+import 'package:mytownmysymptom/view/hospital_detail.dart';
+import 'package:mytownmysymptom/view/stroke.dart';
 import 'package:mytownmysymptom/view/symptom.dart';
 import '../widgets/action_tile.dart';
 import '../widgets/input_pill.dart';
@@ -17,17 +20,11 @@ class Hello extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 420,
-            ),
+            constraints: const BoxConstraints(maxWidth: 420),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 22,
-                vertical: 18,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: 38),
                   Text(
@@ -69,9 +66,7 @@ class Hello extends StatelessWidget {
                           right: 10,
                           bottom: 20,
                           child: Container(
-                            padding: const EdgeInsets.all(
-                              6,
-                            ),
+                            padding: const EdgeInsets.all(6),
                             decoration: const BoxDecoration(
                               color: AppColors.heartBg,
                               shape: BoxShape.circle,
@@ -110,8 +105,7 @@ class Hello extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const SymptomScreen(),
+                                  builder: (_) => const SymptomScreen(),
                                 ),
                               );
                             },
@@ -122,8 +116,7 @@ class Hello extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const Filter(),
+                                  builder: (_) => const StrokePredictionScreen(),
                                 ),
                               );
                             },
@@ -131,27 +124,54 @@ class Hello extends StatelessWidget {
                           ActionTile(
                             label: "병원찾기",
                             onTap: () {
-                              ScaffoldMessenger.of(
+                              Navigator.push(
                                 context,
-                              ).showSnackBar(
-                                const SnackBar(
-                                  content: Text("준비중이에요!"),
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return Gmap();
+                                  },
                                 ),
                               );
+
+                              // ScaffoldMessenger.of(
+                              //   context,
+                              // ).showSnackBar(
+                              //   const SnackBar(
+                              //     content: Text("준비중이에요!"),
+                              //   ),
+                              // );
                             },
                           ),
                           ActionTile(
                             label: "내 병원",
                             onTap: () {
-                              ScaffoldMessenger.of(
-                                context,
-                              ).showSnackBar(
-                                const SnackBar(
-                                  content: Text("준비중이에요!"),
-                                ),
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("준비중이에요!")),
                               );
                             },
                           ),
+                          ActionTile(
+                            label: "병원상세페이지 TEST",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return HospitalDetail();
+                                  },
+                                ),
+                              );
+
+                              // ScaffoldMessenger.of(
+                              //   context,
+                              // ).showSnackBar(
+                              //   const SnackBar(
+                              //     content: Text("준비중이에요!"),
+                              //   ),
+                              // );
+                            },
+                          ),
+
                         ],
                       ),
                     ),

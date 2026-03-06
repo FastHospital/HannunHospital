@@ -59,7 +59,7 @@ class Hospital {
     this.closingHour,
   });
 
-  Hospital.fromMap(Map<String, Object?> map)
+  Hospital.fromMap(Map<String, dynamic> map)
   : id = map['id'] as int?,
       name = map['name'] as String,
       phone = map['phone'] as String,

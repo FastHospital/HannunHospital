@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mytownmysymptom/config.dart';
 import 'package:mytownmysymptom/model/hospital.dart';
+import 'package:mytownmysymptom/view/google_map.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -40,7 +41,20 @@ class _HomeState extends State<Home> {
         child: Column(
           children: [
             Text(Hospital.keys.join(", ")),
-            test.length>0 ? Text('${test[0].name}') : Text('')
+            test.length>0 ? Text('${test[0].name}') : Text(''),
+            ElevatedButton(
+              onPressed: (){
+                Navigator.push(
+                  context, MaterialPageRoute(
+                    builder: (context) {
+                      return Gmap();
+                    }
+                ));
+                
+
+              }, 
+              child: Text('병원찾기')
+            )
           ],
         ),
       ),
