@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class StrokePrediction2Screen extends StatefulWidget {
   const StrokePrediction2Screen({super.key});
@@ -58,25 +61,60 @@ class _StrokePrediction2ScreenState extends State<StrokePrediction2Screen> {
   }
 
   Future<void> predictStroke() async {
+    
+
+    /*
+0 - Never_worked, 
+1 - children, 
+2 - Govt_job, 
+3 - Self-employed, 
+4 - Private
+    */
+    var jsonBody = {
+      "age": age.toString(),
+      "sex": gender == '남성' ? "1": "0",
+      "hypertension": hypertension =='있음'?"1":"0",
+      "heart_disease": heartDisease == '있음'? "1":"0",
+      "ever_married": everMarried == "예"?"1":"0", //everMarried.toString(),
+      "work_type": workType=="민간"?"4":workType=="자영업"?"3":workType=='공무원'?"2":workType=='아동'?"1":"0",
+      "Residence_type": residenceType == "도시"? "1":"0",
+      "avg_glucose_level": glucose.toString(),
+      "bmi": bmi.toString(),
+      "smoking_status": smokingStatus =="흡연"?"1":"0",
+    };
+    Map<String,String> xx = {'Content-Type':'application/json'};
+    final response = await http.post(Uri.parse('http://172.16.250.187:8000/items/result'), headers:xx,  body: jsonEncode(jsonBody));
     String risk = '낮음';
 
-    int score = 0;
-    if (age >= 60) score += 2;
-    if (bmi >= 30) score += 1;
-    if (glucose >= 180) score += 2;
-    if (heartDisease == '있음') score += 2;
-    if (hypertension == '있음') score += 2;
-    if (smokingStatus == '흡연') score += 1;
+    final rObj = jsonDecode(response.body);
 
-    if (score >= 6) {
-      risk = '높음';
-    } else if (score >= 3) {
-      risk = '보통';
+    if(rObj['result'] == 0  ){
+      setState(() {
+        resultText = '예측 결과: 아직 안전합니다.';
+      });
+    }else{
+            setState(() {
+        resultText = '예측 결과: 위험';
+      });
     }
 
-    setState(() {
-      resultText = '예측 결과: 뇌졸중 위험도 $risk\n(나이 ${age.toInt()}세 기준)';
-    });
+    // int score = 0;
+    // if (age >= 60) score += 2;
+    // if (bmi >= 30) score += 1;
+    // if (glucose >= 180) score += 2;
+    // if (heartDisease == '있음') score += 2;
+    // if (hypertension == '있음') score += 2;
+    // if (smokingStatus == '흡연') score += 1;
+
+    // if (score >= 6) {
+    //   risk = '높음';
+    // } else if (score >= 3) {
+    //   risk = '보통';
+    // }
+
+    // setState(() {
+    //   resultText = '예측 결과: 뇌졸중 위험도 $risk\n(나이 ${age.toInt()}세 기준)';
+    // });
   }
 
   @override

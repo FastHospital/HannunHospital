@@ -67,11 +67,11 @@ Future<void> initializeLocalDbOnStart() async {
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
-  // remove database
-  await deleteLocalDbOnStart();
+  // // remove database
+  // await deleteLocalDbOnStart();
 
-  // GT: initialize Database
-  await initializeLocalDbOnStart();
+  // // GT: initialize Database
+  // await initializeLocalDbOnStart();
 
   runApp(const MyApp());
 }
