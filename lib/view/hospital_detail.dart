@@ -15,7 +15,7 @@ enum TtsState { playing, stopped, paused, continued }
 class _HospitalDetailState extends State<HospitalDetail> {
   late FlutterTts flutterTts;
   TtsState ttsState = TtsState.stopped;
-  
+
   var hospitalData = [];
   late Hospital? hospital = null; 
   late String number = '';
@@ -170,7 +170,12 @@ class _HospitalDetailState extends State<HospitalDetail> {
             SizedBox(width: 80, child:Text(label, style: TextStyle(color:Colors.lightBlue,fontSize:20))),
             Expanded(child:  Text(n)),
             IconButton(
-              onPressed: () async=> await _speak(n),
+              onPressed: () async {
+                  ttsState = TtsState.stopped;
+                  await _speak(n);
+           
+
+              },
               icon: Icon(Icons.volume_up)
             ), 
           ]
