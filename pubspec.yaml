@@ -53,6 +53,8 @@ dependencies:
   flutter_tts: ^4.2.5
   url_launcher: ^6.3.0 # 지도 앱 실행하기
 
+  # request http
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

@@ -26,7 +26,8 @@ class StrokeModel(BaseModel):
 #data: Diabetes
 @router.post('/result')
 async def read_item(data:StrokeModel):
-
+  print('------------------')
+  print(data)
   # 계산해서 결과치 반환
   #['sex', 'age', 'hypertension', 'heart_disease', 'ever_married',
   #     'work_type', 'Residence_type', 'avg_glucose_level', 'bmi',
@@ -34,7 +35,7 @@ async def read_item(data:StrokeModel):
   df2 = pd.DataFrame(
      {
       'sex': [int(data.sex)],
-      'age': [int(data.age)],     
+      'age': [float(data.age)],     
       'hypertension': [int(data.hypertension)],
       'heart_disease':[int(data.heart_disease)],
       'ever_married':[int(data.ever_married)],
