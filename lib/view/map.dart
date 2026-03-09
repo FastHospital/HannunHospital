@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mytownmysymptom/view/preview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MaterialApp(
-    home: SeniorMapScreen(),
+    home: SeniorMapScreen(hospitals: [],),
     debugShowCheckedModeBanner: false,
   ));
 }
 
 class SeniorMapScreen extends StatefulWidget {
-  const SeniorMapScreen({super.key});
+  const SeniorMapScreen({super.key, required List<Hospital> hospitals});
 
   @override
   State<SeniorMapScreen> createState() => _SeniorMapScreenState();

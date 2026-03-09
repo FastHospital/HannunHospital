@@ -3,6 +3,7 @@ import 'package:mytownmysymptom/theme/app_color.dart';
 import 'package:mytownmysymptom/view/google_map.dart';
 import 'package:mytownmysymptom/view/hospital_detail.dart';
 import 'package:mytownmysymptom/view/map.dart';
+import 'package:mytownmysymptom/view/preview.dart';
 import 'package:mytownmysymptom/view/stroke2.dart';
 import '../widgets/action_tile.dart';
 import '../widgets/input_pill.dart';
@@ -111,8 +112,8 @@ class Hello extends StatelessWidget {
                           //   },
                           // ),
                           ActionTile(
-                            label: "필터증상",
-                            //label: "뇌졸중 예측",
+                            //label: "필터증상",
+                            label: "뇌졸중 예측",
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -122,14 +123,14 @@ class Hello extends StatelessWidget {
                               );
                             },
                           ),
-                          ActionTile(
-                            label: "병원찾기",
+                         ActionTile(
+                            label: "미리보기",
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return Gmap();
+                                    return HospitalSearchScreen(hospitals: [],);
                                   },
                                 ),
                               );
@@ -144,19 +145,21 @@ class Hello extends StatelessWidget {
                             },
                           ),
                           ActionTile(
-                            label: "병원 지도",
-                             onTap: () {
-                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const SeniorMapScreen(),
-                                ),
-                              );
-                            },
-                          ),
+  label: "병원 지도",
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SeniorMapScreen(
+          hospitals: demoHospitals,
+        ),
+      ),
+    );
+  },
+),
                           ActionTile(
-                            label: "병원상세 TEST",
-                            // label: "병원전화",
+                            //label: "병원상세 TEST",
+                            label: "병원전화",
                             onTap: () {
                               Navigator.push(
                                 context,
